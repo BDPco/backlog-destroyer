@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backlog Destroyer PRO</title>
+    
+    <script src="https://www.paypal.com/sdk/js?client-id=Ad4DCAaDh8u8OpjOfqQJ6xmVLxCFb4n37F9fHtJgifGcDdcZNhh7Q0BJ7wehCOWvta8pGZwzznibjxAg&currency=USD"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* BDP LOGO REFRESH BUTTON */
+        .logo-container {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            font-weight: 900;
+            font-size: 28px;
+            letter-spacing: 4px;
+            color: #39ff14;
+            cursor: pointer;
+            text-shadow: 0 0 15px rgba(57, 255, 20, 0.6);
+            transition: 0.3s;
+            user-select: none;
+            z-index: 100;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.1);
+            color: #fff;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            border-radius: 24px;
+            width: 380px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        input {
+            width: 70%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+            color: white;
+            outline: none;
+        }
+
+        .add-btn {
+            background: #39ff14;
+            color: black;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: 0.2s;
+        }
+
+        .add-btn:hover { background: #32e612; }
+
+        ul { list-style: none; padding: 0; margin-top: 25px; text-align: left; max-height: 200px; overflow-y: auto; }
+        
+        li {
+            background: rgba(255, 255, 255, 0.07);
+            margin-bottom: 8px;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .pro-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .ai-btn {
+            background: linear-gradient(90deg, #ffd700, #ffa500);
+            color: black;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        #paypal-button-container { margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="logo-container" onclick="location.reload()">BDP</div>
+
+<div class="container">
+    <h1>BACKLOG DESTROYER</h1>
+    
+    <div style="display: flex;">
+        <input type="text" id="gameInput" placeholder="Add a game...">
+        <button class="add-btn" onclick="addGame()">ADD</button>
+    </div>
+
+    <ul id="gameList"></ul>
+
+    <div class="pro-section">
+        <button class="ai-btn" onclick="triggerAIPicker()">✨ AI GAME PICKER (PRO)</button>
+        <div id="paypal-button-container"></div>
+    </div>
+</div>
+
+<script>
+    let isPro = localStorage.getItem("isProUser") === "true";
+
+    // Load saved games and Pro status on startup
+    window.onload = function() {
+        const savedGames = JSON.parse(localStorage.getItem("myGames") || "[]");
+        savedGames.forEach(game => renderGame(game));
+        
+        if (isPro) {
+            document.getElementById('paypal-button-container').style.display = 'none';
+        }
+    };
+
+    function addGame() {
+        let val = document.getElementById("gameInput").value;
+        if(!val) return;
+        renderGame(val);
+        saveGames();
+        document.getElementById("gameInput").value = "";
+    }
+
+    function renderGame(text) {
+        let li = document.createElement("li");
+        li.innerHTML = `<span>${text}</span><span onclick="removeGame(this)" style="color:#ff4d4d; cursor:pointer;">✕</span>`;
+        document.getElementById("gameList").appendChild(li);
+    }
+
+    function removeGame(el) {
+        el.parentElement.remove();
+        saveGames();
+    }
+
+    function saveGames() {
+        const games = [];
+        document.querySelectorAll("#gameList li span:first-child").forEach(span => games.push(span.textContent));
+        localStorage.setItem("myGames", JSON.stringify(games));
+    }
+
+    function triggerAIPicker() {
+        if (!isPro) {
+            alert("This is a PRO feature. Please use the secure PayPal checkout below to unlock!");
+        } else {
+            let games = document.querySelectorAll("#gameList li");
+            if(games.length === 0) return alert("Add games to your list first!");
+            let random = Math.floor(Math.random() * games.length);
+            let picked = games[random].querySelector("span").textContent;
+            alert("🤖 AI SUGGESTION: " + picked);
+        }
+    }
+
+    // PAYPAL LOGIC
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{ amount: { value: '1.00' } }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                alert('Success! Pro Unlocked for ' + details.payer.name.given_name);
+                isPro = true;
+                localStorage.setItem("isProUser", "true");
+                document.getElementById('paypal-button-container').style.display = 'none';
+            });
+        }
+    }).render('#paypal-button-container');
+</script>
+
+</body>
+</html>
