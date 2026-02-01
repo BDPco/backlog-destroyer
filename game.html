@@ -4,28 +4,18 @@
     <title>BDP: Jamaica Road Rush</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
     <style>
-        body { margin: 0; background: #064e3b; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        #ui-container { position: absolute; top: 20px; left: 20px; color: #fed100; z-index: 10; pointer-events: none; }
-        .stat { background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 5px; border-left: 5px solid #009b3a; margin-bottom: 5px; }
-        canvas { border: 4px solid #fed100; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        #instructions { position: absolute; bottom: 20px; color: white; font-family: sans-serif; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <div id="ui-container">
-        <div class="stat">LOCATION: KINGSTON BETA</div>
-        <div class="stat">VEHICLE: TOYOTA PROBOX</div>
-        <div style="font-size: 12px; color: white;">Use ARROW KEYS to drive</div>
-    </div>
-
+    <div id="instructions">Use ARROW KEYS to drive the Probox!</div>
 <script>
     const config = {
         type: Phaser.AUTO,
         width: 800,
         height: 600,
-        physics: {
-            default: 'arcade',
-            arcade: { debug: false }
-        },
+        physics: { default: 'arcade', arcade: { debug: false } },
         scene: { preload: preload, create: create, update: update }
     };
 
@@ -33,54 +23,44 @@
     let car, cursors, speed = 0;
 
     function preload() {
-        // 1. STABLE MAP LINK (Jamaican Pixel Art)
-        this.load.image('map', 'https://i.imgur.com/W7S4A0m.png'); 
-        
-        // 2. PROBOX (This tries to load your uploaded file. If not found, it uses a placeholder)
-        // Make sure you upload your cropped image as 'probox.png' to GitHub!
-        this.load.image('probox', 'probox.png');
-        this.load.image('fallback_car', 'https://labs.phaser.io/assets/sprites/car90.png');
+        // We use a built-in Phaser shape for the car so it doesn't fail if images are missing
     }
 
     function create() {
-        // Add Map - Scaled up for a bigger neighborhood feel
-        let bg = this.add.image(0, 0, 'map').setOrigin(0, 0).setScale(2.5);
-        this.physics.world.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
-
-        // Add Car (Uses Probox if available, else fallback)
-        const carTexture = this.textures.exists('probox') ? 'probox' : 'fallback_car';
-        car = this.physics.add.sprite(400, 300, carTexture);
+        // 1. Create a huge Green Grass background (The Island)
+        const graphics = this.add.graphics();
+        graphics.fillStyle(0x009b3a, 1); // Jamaican Green
+        graphics.fillRect(0, 0, 2000, 2000);
         
-        // Adjust car size if your Probox image is huge
-        car.setScale(0.8); 
-        car.setCollideWorldBounds(true);
-        car.setDrag(1000); 
+        // Add some "Roads" (Grey rectangles)
+        graphics.fillStyle(0x333333, 1);
+        graphics.fillRect(0, 900, 2000, 200); // Horizontal Road
+        graphics.fillRect(900, 0, 200, 2000); // Vertical Road
 
-        // Camera - The "GTA" follow effect
+        this.physics.world.setBounds(0, 0, 2000, 2000);
+
+        // 2. Create the Car (A simple rectangle for now so it ALWAYS loads)
+        // We will replace this with your Probox later
+        car = this.add.rectangle(1000, 1000, 50, 30, 0xfed100); // Jamaican Gold Car
+        this.physics.add.existing(car);
+        car.body.setCollideWorldBounds(true);
+
+        // 3. Camera Follow
         this.cameras.main.startFollow(car, true, 0.1, 0.1);
-        this.cameras.main.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
+        this.cameras.main.setBounds(0, 0, 2000, 2000);
 
         cursors = this.input.keyboard.createCursorKeys();
     }
 
     function update() {
-        // Driving Logic (Acceleration / Friction)
-        if (cursors.up.isDown) {
-            speed = Math.min(speed + 7, 400); 
-        } else if (cursors.down.isDown) {
-            speed = Math.max(speed - 7, -120); 
-        } else {
-            speed *= 0.96; 
-        }
+        if (cursors.up.isDown) speed = Math.min(speed + 5, 400);
+        else if (cursors.down.isDown) speed = Math.max(speed - 5, -100);
+        else speed *= 0.96;
 
-        // Steering (Only turns when moving)
-        if (Math.abs(speed) > 10) {
-            const turnFactor = speed > 0 ? 1 : -1;
-            if (cursors.left.isDown) car.setAngularVelocity(-180 * turnFactor);
-            else if (cursors.right.isDown) car.setAngularVelocity(180 * turnFactor);
-            else car.setAngularVelocity(0);
-        } else {
-            car.setAngularVelocity(0);
+        if (speed !== 0) {
+            const turn = speed > 0 ? 1 : -1;
+            if (cursors.left.isDown) car.rotation -= 0.05 * turn;
+            if (cursors.right.isDown) car.rotation += 0.05 * turn;
         }
 
         this.physics.velocityFromRotation(car.rotation, speed, car.body.velocity);
