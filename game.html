@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>BDP: Jamaica Road Rush</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
     <style>
-        body { margin: 0; background: #222; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        canvas { border: 5px solid #009b3a; box-shadow: 0 0 20px rgba(0,0,0,0.8); } 
+        body { margin: 0; background: #064e3b; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #ui-container { position: absolute; top: 20px; left: 20px; color: #fed100; z-index: 10; pointer-events: none; }
+        .stat { background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 5px; border-left: 5px solid #009b3a; margin-bottom: 5px; }
+        canvas { border: 4px solid #fed100; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
+    <div id="ui-container">
+        <div class="stat">LOCATION: KINGSTON BETA</div>
+        <div class="stat">VEHICLE: TOYOTA PROBOX</div>
+        <div style="font-size: 12px; color: white;">Use ARROW KEYS to drive</div>
+    </div>
+
 <script>
     const config = {
         type: Phaser.AUTO,
@@ -15,63 +24,65 @@
         height: 600,
         physics: {
             default: 'arcade',
-            arcade: { debug: false } // Set to true to see hitboxes
+            arcade: { debug: false }
         },
         scene: { preload: preload, create: create, update: update }
     };
 
     const game = new Phaser.Game(config);
-    let car;
-    let cursors;
-    let speed = 0;
+    let car, cursors, speed = 0;
 
     function preload() {
-        // 1. Loading the Jamaican Neighborhood Map I generated
-        this.load.image('map', 'https://r.jina.ai/i/05e2786a987c473f8a416346761664e7'); 
+        // 1. STABLE MAP LINK (Jamaican Pixel Art)
+        this.load.image('map', 'https://i.imgur.com/W7S4A0m.png'); 
         
-        // 2. Loading a placeholder car (Replace this with your 'probox.png' later!)
-        this.load.image('probox', 'https://labs.phaser.io/assets/sprites/car90.png');
+        // 2. PROBOX (This tries to load your uploaded file. If not found, it uses a placeholder)
+        // Make sure you upload your cropped image as 'probox.png' to GitHub!
+        this.load.image('probox', 'probox.png');
+        this.load.image('fallback_car', 'https://labs.phaser.io/assets/sprites/car90.png');
     }
 
     function create() {
-        // Add the Map and scale it up so it's a big neighborhood
-        let bg = this.add.image(0, 0, 'map').setOrigin(0, 0).setScale(2);
-        
-        // Set the boundaries of the world based on the map size
+        // Add Map - Scaled up for a bigger neighborhood feel
+        let bg = this.add.image(0, 0, 'map').setOrigin(0, 0).setScale(2.5);
         this.physics.world.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
 
-        // Add the Car sprite
-        car = this.physics.add.sprite(400, 300, 'probox');
+        // Add Car (Uses Probox if available, else fallback)
+        const carTexture = this.textures.exists('probox') ? 'probox' : 'fallback_car';
+        car = this.physics.add.sprite(400, 300, carTexture);
+        
+        // Adjust car size if your Probox image is huge
+        car.setScale(0.8); 
         car.setCollideWorldBounds(true);
-        car.setAngle(-90); // Start facing North
+        car.setDrag(1000); 
 
-        // Camera Setup - Makes the screen follow the car
+        // Camera - The "GTA" follow effect
         this.cameras.main.startFollow(car, true, 0.1, 0.1);
         this.cameras.main.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
 
-        // Enable Keyboard Controls
         cursors = this.input.keyboard.createCursorKeys();
     }
 
     function update() {
-        // Driving Mechanics (Gas and Brake)
+        // Driving Logic (Acceleration / Friction)
         if (cursors.up.isDown) {
-            speed = Math.min(speed + 5, 400); // Top speed 400
+            speed = Math.min(speed + 7, 400); 
         } else if (cursors.down.isDown) {
-            speed = Math.max(speed - 5, -100); // Reverse speed -100
+            speed = Math.max(speed - 7, -120); 
         } else {
-            speed *= 0.96; // Friction (Slowing down naturally)
+            speed *= 0.96; 
         }
 
-        // Steering (Only works while moving)
-        if (speed !== 0) {
-            const turnDirection = speed > 0 ? 1 : -1;
-            if (cursors.left.isDown) car.setAngularVelocity(-180 * turnDirection);
-            else if (cursors.right.isDown) car.setAngularVelocity(180 * turnDirection);
+        // Steering (Only turns when moving)
+        if (Math.abs(speed) > 10) {
+            const turnFactor = speed > 0 ? 1 : -1;
+            if (cursors.left.isDown) car.setAngularVelocity(-180 * turnFactor);
+            else if (cursors.right.isDown) car.setAngularVelocity(180 * turnFactor);
             else car.setAngularVelocity(0);
+        } else {
+            car.setAngularVelocity(0);
         }
 
-        // Apply movement based on rotation
         this.physics.velocityFromRotation(car.rotation, speed, car.body.velocity);
     }
 </script>
