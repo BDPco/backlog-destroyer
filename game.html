@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
+    <style>
+        body { margin: 0; background: #222; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        canvas { border: 5px solid #009b3a; box-shadow: 0 0 20px rgba(0,0,0,0.8); } 
+    </style>
+</head>
+<body>
+<script>
+    const config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        physics: {
+            default: 'arcade',
+            arcade: { debug: false } // Set to true to see hitboxes
+        },
+        scene: { preload: preload, create: create, update: update }
+    };
+
+    const game = new Phaser.Game(config);
+    let car;
+    let cursors;
+    let speed = 0;
+
+    function preload() {
+        // 1. Loading the Jamaican Neighborhood Map I generated
+        this.load.image('map', 'https://r.jina.ai/i/05e2786a987c473f8a416346761664e7'); 
+        
+        // 2. Loading a placeholder car (Replace this with your 'probox.png' later!)
+        this.load.image('probox', 'https://labs.phaser.io/assets/sprites/car90.png');
+    }
+
+    function create() {
+        // Add the Map and scale it up so it's a big neighborhood
+        let bg = this.add.image(0, 0, 'map').setOrigin(0, 0).setScale(2);
+        
+        // Set the boundaries of the world based on the map size
+        this.physics.world.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
+
+        // Add the Car sprite
+        car = this.physics.add.sprite(400, 300, 'probox');
+        car.setCollideWorldBounds(true);
+        car.setAngle(-90); // Start facing North
+
+        // Camera Setup - Makes the screen follow the car
+        this.cameras.main.startFollow(car, true, 0.1, 0.1);
+        this.cameras.main.setBounds(0, 0, bg.displayWidth, bg.displayHeight);
+
+        // Enable Keyboard Controls
+        cursors = this.input.keyboard.createCursorKeys();
+    }
+
+    function update() {
+        // Driving Mechanics (Gas and Brake)
+        if (cursors.up.isDown) {
+            speed = Math.min(speed + 5, 400); // Top speed 400
+        } else if (cursors.down.isDown) {
+            speed = Math.max(speed - 5, -100); // Reverse speed -100
+        } else {
+            speed *= 0.96; // Friction (Slowing down naturally)
+        }
+
+        // Steering (Only works while moving)
+        if (speed !== 0) {
+            const turnDirection = speed > 0 ? 1 : -1;
+            if (cursors.left.isDown) car.setAngularVelocity(-180 * turnDirection);
+            else if (cursors.right.isDown) car.setAngularVelocity(180 * turnDirection);
+            else car.setAngularVelocity(0);
+        }
+
+        // Apply movement based on rotation
+        this.physics.velocityFromRotation(car.rotation, speed, car.body.velocity);
+    }
+</script>
+</body>
+</html>
