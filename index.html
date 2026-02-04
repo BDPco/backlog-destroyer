@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GamerVault | Caribbean's #1 Marketplace</title>
@@ -11,109 +10,62 @@
     <style>
         :root { --gold: #fed100; --dark: #0d0f1a; --card-bg: #161925; --text-gray: #a0a0a0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--dark); color: white; margin: 0; overflow-x: hidden; }
-        
         header { background: var(--gold); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid #000; }
-        .logo { color: #000; font-weight: 900; font-size: 24px; letter-spacing: -1px; }
+        .logo { color: #000; font-weight: 900; font-size: 24px; letter-spacing: -1px; text-decoration: none; }
         .ticker { font-size: 11px; font-weight: bold; color: #000; text-transform: uppercase; }
         .menu-btn { cursor: pointer; color: #000; font-size: 28px; line-height: 1; }
-
         .hero { padding: 80px 20px; text-align: center; background: radial-gradient(circle at center, #1a1e2e 0%, var(--dark) 100%); }
         .hero h1 { font-size: 48px; margin: 0; font-weight: 900; }
         .hero h2 { font-size: 42px; margin: 0; color: var(--gold); font-weight: 900; }
         .hero p { color: var(--text-gray); max-width: 600px; margin: 20px auto; font-size: 16px; line-height: 1.6; }
-
         .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
         .section-header { text-align: center; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 900; margin-bottom: 40px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-        .card { background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 1px solid #2a2e3f; cursor: pointer; transition: 0.3s; }
+        .card { background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 1px solid #2a2e3f; transition: 0.3s; padding-bottom: 15px; }
         .card:hover { transform: translateY(-10px); border-color: var(--gold); }
         .card-img { width: 100%; height: 200px; background-size: cover; background-position: center; border-bottom: 1px solid #2a2e3f; }
         .card-body { padding: 20px; }
         .card-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
         .card-price { font-size: 26px; font-weight: 900; color: var(--gold); }
-
         .sidebar { position: fixed; right: -300px; top: 0; width: 280px; height: 100%; background: #000; z-index: 2000; transition: 0.3s; padding-top: 80px; border-left: 2px solid var(--gold); }
         .sidebar.active { right: 0; }
         .sidebar a { display: block; padding: 15px 30px; color: white; text-decoration: none; font-weight: 700; border-bottom: 1px solid #111; cursor: pointer; }
-        
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 3000; display: none; overflow-y: auto; }
-        .modal-box { max-width: 550px; margin: 50px auto; background: var(--card-bg); padding: 35px; border-radius: 20px; border: 1px solid var(--gold); position: relative; }
-        
-        input, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #0a0c14; border: 1px solid #2a2e3f; color: white; border-radius: 10px; box-sizing: border-box; }
-        .btn { background: var(--gold); color: #000; padding: 18px; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .btn-purchase { background-color: #28a745; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 5px; width: 100%; margin-bottom: 10px; }
+        .btn-add-cart { background-color: #ffc107; color: black; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 5px; width: 100%; }
         .hidden { display: none; }
-         
         footer { padding: 40px 20px; text-align: center; border-top: 1px solid #222; color: #555; font-size: 12px; font-weight: 600; text-transform: uppercase; }
-		
-		
-	/* Button Styles */
-.btn-container { display: flex; gap: 10px; margin-top: 15px; }
-
-.btn-purchase {
-    background-color: #28a745; /* Green */
-    color: white; border: none; padding: 10px 20px;
-    cursor: pointer; font-weight: bold; border-radius: 5px;
-}
-
-.btn-add-cart {
-    background-color: #ffc107; /* Yellow */
-    color: black; border: none; padding: 10px 20px;
-    cursor: pointer; font-weight: bold; border-radius: 5px;
-}
-
-.cart-btn {
-    font-size: 24px; cursor: pointer; position: relative;
-}
-
-#cart-count {
-    background: #FF8C00; color: white; font-size: 12px;
-    padding: 2px 6px; border-radius: 50%;
-    position: absolute; top: -5px; right: -10px;
-}
     </style>
 </head>
 <body>
 
 <header>
-    <a href="https://bdpco.github.io/gamervault/" class="logo-link" title="Refresh Page">
-  <div class="logo">GAMERVAULT</div>
-</a>
+    <a href="https://bdpco.github.io/gamervault/" class="logo">GAMERVAULT</a>
     <div class="ticker">🔥 14 Accounts Sold via Escrow • Safe & Secure</div>
     <div class="menu-btn" onclick="toggleMenu()">☰</div>
 </header>
 
 <div class="sidebar" id="sidebar">
     <a onclick="showSection('market')">🛒 MARKETPLACE</a>
-    <a id="nav-sell" class="hidden" onclick="showSection('sell')">💰 LIST AN ACCOUNT</a>
-    <a id="nav-cart" onclick="showSection('cart')">🛍️ MY CART (<span id="cart-count">0</span>)</a>
+    <a onclick="showSection('cart')">🛍️ MY CART (<span id="cart-count">0</span>)</a>
 </div>
 
 <div id="market-section">
     <div class="hero">
         <h1>Trade Accounts.</h1>
         <h2>Zero Risk.</h2>
-        <p>One of the newest most secure marketplace for Steam, GTA,S Epic Games accounts etc. Powered by BDP Verified Escrow.</p>
+        <p>Caribbean's most secure marketplace for Steam, GTA, and Epic Games accounts. Powered by BDP Verified Escrow.</p>
         <div style="color: #00ff00; font-size: 11px; font-weight: bold; margin-top: 10px;">● LIVE AUTOMATION ACTIVE</div>
     </div>
     <div class="container">
         <div class="section-header">VIP Featured Listings</div>
         <div class="grid" id="listing-grid"></div>
-        
-        <div style="background: #000; border: 2px solid var(--gold); border-radius: 20px; padding: 40px; margin-top: 60px; text-align: center;">
-            <h3 style="color: var(--gold); margin: 0;">SELLER SPOTLIGHT</h3>
-            <p style="color: var(--text-gray);">Promote your listing to the top of the vault for $10.20.</p>
-            <div id="paypal-button-container" style="max-width:300px; margin: 20px auto;"></div>
-        </div>
-    </div>
-</div>
-        </div>
-    </div>
-</div>
     </div>
 </div>
 
-<div id="sell-section" class="container hidden"></div>
-<div id="cart-section" class="container hidden"></div>
+<div id="cart-section" class="container hidden">
+    <h1 style="color:var(--gold)">Your Cart</h1>
+    <div id="cart-items-display" class="grid"></div>
+</div>
 
 <footer>
     GAMERVAULT ESCROW SERVICES © 2026<br>
@@ -122,172 +74,58 @@
 
 <script src="https://www.paypal.com/sdk/js?client-id=AewX9Z7LNB6DZTa8jcMeDa5SEGB_nq2f2A_tdpZesgEUROomDxIp-e-Bs2GXruNPs_aCRV1SY291Lvqa&currency=USD"></script>
 <script>
-    firebase
-    const db = firebase.database();
-    const auth = firebase.auth();
-// Check if the current page URL is actually a sign-in link
-if (auth.isSignInWithEmailLink(window.location.href)) {
-    // Retrieve the email we saved earlier
-    let email = window.localStorage.getItem('emailForSignIn');
-    
-    // If they opened the link on a different device/browser, ask for the email again
-    if (!email) {
-        email = window.prompt('Please provide your email for confirmation');
-    }
+    const firebaseConfig = { apiKey: "AIzaSyAwWWQAuYFTCP8cjpDFs7JEkBG-sr7I6dw", databaseURL: "https://gamervault-ae418-default-rtdb.firebaseio.com", authDomain: "gamervault-ae418.firebaseapp.com" };
+    firebase.initializeApp(firebaseConfig);
 
-    auth.signInWithEmailLink(email, window.location.href)
-        .then((result) => {
-            window.localStorage.removeItem('emailForSignIn'); // Clean up
-            alert("Welcome to the Vault!");
-            window.location.reload(); 
-        })
-        .catch((error) => {
-            alert("Link expired or invalid.");
-        });
-}
-    // SIDEBAR LOGIC
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+    
     function showSection(s) {
-        document.querySelectorAll('.container, #market-section').forEach(el => el.classList.add('hidden'));
+        document.getElementById('market-section').classList.add('hidden');
+        document.getElementById('cart-section').classList.add('hidden');
         document.getElementById(s + '-section').classList.remove('hidden');
         if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
     }
-	
-	function sendAuthLink() {
-    const email = document.getElementById('authEmail').value; // Grabs the email from the ID above
-    
-    const actionCodeSettings = {
-        url: 'https://bdpco.github.io/gamervault/', // Must be in your "Authorized Domains"
-        handleCodeInApp: true
-    };
 
-    auth.sendSignInLinkToEmail(email, actionCodeSettings)
-        .then(() => {
-            // Save the email locally so they don't have to re-type it later
-            window.localStorage.setItem('emailForSignIn', email); 
-            alert("Link sent! Check your inbox.");
-        })
-        .catch((error) => {
-            alert("Error: " + error.message);
-        });
-}
-function logout() {
-    auth.signOut().then(() => {
-        alert("Logged out successfully!");
-        location.reload(); // This refreshes the page so the login link reappears
-    }).catch((error) => {
-        console.error("Logout Error:", error);
-    });
-}
+    // LIST YOUR ACCOUNTS HERE
+    const accountData = [
+      { id: 1, title: "OG Renegade Raider", price: 150.00, img: "images/renegade.jpg", desc: "Full Access, Linkable, OG Email." },
+      { id: 2, title: "Black Knight + Mako", price: 85.00, img: "images/blackknight.jpg", desc: "S2 Max, Rare Mako, 120 Skins." }
+    ];
 
-    // AUTH OBSERVER (This fixes the Logout glitch)
-    auth.onAuthStateChanged(user => {
-        const navAuth = document.getElementById('nav-auth');
-        const navLogout = document.getElementById('nav-logout');
-        const navSell = document.getElementById('nav-sell');
-        const navSettings = document.getElementById('nav-settings');
+    let cart = JSON.parse(localStorage.getItem('gv_cart')) || [];
 
-        if (user) {
-            navAuth.classList.add('hidden');
-            navLogout.classList.remove('hidden');
-            db.ref('users/' + user.uid).once('value', s => {
-                const data = s.val();
-                if (data && data.role === 'seller') {
-                    navSell.classList.remove('hidden');
-                    navSettings.classList.remove('hidden');
-                    renderProPayment(user.uid);
-                }
-            });
-        } else {
-            navAuth.classList.remove('hidden');
-            navLogout.classList.add('hidden');
-            navSell.classList.add('hidden');
-            navSettings.classList.add('hidden');
-        }
-    });
-
-    function logout() { auth.signOut().then(() => location.reload()); }
-
-    // PAYPAL RENDERERS
-    function renderSpotlight() {
-        paypal.Buttons({
-            createOrder: (data, actions) => { return actions.order.create({ purchase_units: [{ amount: { value: '10.20' } }] }); }
-        }).render('#paypal-button-container');
+    function renderListings() {
+        const grid = document.getElementById('listing-grid');
+        grid.innerHTML = accountData.map(acc => `
+            <div class="card">
+                <div class="card-img" style="background-image: url('${acc.img}')"></div>
+                <div class="card-body">
+                    <div class="card-title">${acc.title}</div>
+                    <div class="card-price">$${acc.price}</div>
+                    <p style="font-size:12px; color:gray;">${acc.desc}</p>
+                    <button class="btn-purchase" onclick="window.location.href='https://t.me/pckycee'">PURCHASE NOW</button>
+                    <button class="btn-add-cart" onclick="addToCart(${acc.id})">ADD TO CART</button>
+                </div>
+            </div>
+        `).join('');
     }
-    renderSpotlight();
-// 1. KEEP THIS: YOUR CONFIG (This is the brain of the site)
-const firebaseConfig = { 
-    apiKey: "AIzaSyAwWWQAuYFTCP8cjpDFs7JEkBG-sr7I6dw", 
-    databaseURL: "https://gamervault-ae418-default-rtdb.firebaseio.com", 
-    authDomain: "gamervault-ae418.firebaseapp.com" 
-};
-firebase.initializeApp(firebaseConfig);
 
-// 2. KEEP THIS: SIDEBAR LOGIC (So your menu works)
-function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
-function showSection(s) {
-    document.querySelectorAll('.container, #market-section').forEach(el => el.classList.add('hidden'));
-    const target = document.getElementById(s + '-section');
-    if(target) target.classList.remove('hidden');
-    if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
-}
+    function addToCart(id) {
+        const item = accountData.find(acc => acc.id === id);
+        cart.push(item);
+        localStorage.setItem('gv_cart', JSON.stringify(cart));
+        updateCartUI();
+        alert(item.title + " added to cart!");
+    }
 
-// 3. THE NEW ACCOUNT LIST (This is how you list accounts now)
-const accountData = [
-  {
-    id: 1,
-    title: "OG Renegade Raider",
-    price: 150.00,
-    img: "images/renegade.jpg", // Make sure this folder/file exists on GitHub
-    desc: "Full Access, Linkable to all consoles, OG Email included."
-  },
-  {
-    id: 2,
-    title: "Black Knight + Mako",
-    price: 85.00,
-    img: "images/blackknight.jpg",
-    desc: "S2 Max, Rare Mako Glider, 120 Skins."
-  }
-];
+    function updateCartUI() {
+        const cartCounts = document.querySelectorAll('#cart-count');
+        cartCounts.forEach(el => el.innerText = cart.length);
+    }
 
-// 4. THE NO-LOGIN CART (Remembers people via their browser)
-let cart = JSON.parse(localStorage.getItem('gv_cart')) || [];
-
-function addToCart(id) {
-    const item = accountData.find(acc => acc.id === id);
-    cart.push(item);
-    localStorage.setItem('gv_cart', JSON.stringify(cart));
+    // Initialize Page
+    renderListings();
     updateCartUI();
-    alert(item.title + " added to cart!");
-}
-
-function updateCartUI() {
-    const cartCount = document.getElementById('cart-count');
-    if(cartCount) cartCount.innerText = cart.length;
-}
-
-
-  const grid = document.getElementById('listing-grid');
-grid.innerHTML = accountData.map(acc => `
-    <div class="card">
-        <div class="card-img" style="background-image: url('${acc.img}')"></div>
-        <div class="card-body">
-            <div class="card-title">${acc.title}</div>
-            <div class="card-price">$${acc.price}</div>
-            <button class="btn-purchase" onclick="location.href='https://t.me/pckycee'">PURCHASE</button>
-            <button class="btn-add-cart" onclick="addToCart(${acc.id})">ADD TO CART</button>
-        </div>
-    </div>
-`).join('');
-
-// Run this when page loads
-updateCartUI();
-    function renderProPayment(uid) {
-        document.getElementById('paypal-pro-container').innerHTML = "";
-        paypal.Buttons({
-            createOrder: (data, actions) => { return actions.order.create({ purchase_units: [{ amount: { value: '15.00' } }] }); }
-        }).render('#paypal-pro-container');
-    }
 </script>
 </body>
 </html>
